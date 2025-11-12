@@ -288,37 +288,23 @@ const App: React.FC = () => {
 
     setTipLoading(variantId, metric, true);
     try {
-      const { tip, variant: improvedVariant } = await remixScoreTip(
-        apiKey,
-        formValues.model,
-        target.variant,
-        metric,
-        currentTip,
-      );
-
-      const mergedVariant = {
-        ...target.variant,
-        ...improvedVariant,
-        id: target.variant.id,
-      };
-
-      const updatedEntry: VariantWithMeta = {
-        ...target,
-        variant: mergedVariant,
-        warnings: getLengthWarnings(mergedVariant),
-        score: {
-          ...target.score,
-          updatedAt: Date.now(),
-          [metric]: { ...target.score[metric], tip },
-        },
-      };
-
+      const tip = await remixScoreTip(apiKey, formValues.model, target.variant, metric, currentTip);
       setVariants((existing) =>
-        existing.map((entry) => (entry.variant.id === variantId ? updatedEntry : entry)),
+        existing.map((entry) => {
+          if (entry.variant.id !== variantId || !entry.score) {
+            return entry;
+          }
+          return {
+            ...entry,
+            score: {
+              ...entry.score,
+              updatedAt: Date.now(),
+              [metric]: { ...entry.score[metric], tip },
+            },
+          };
+        }),
       );
-
-      await scoreVariants([updatedEntry], formValues.model);
-      pushToast('success', 'Tip toegepast en score ververst.');
+      pushToast('success', 'Nieuwe tip klaargestoomd.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Tip remix mislukt';
       pushToast('error', message);

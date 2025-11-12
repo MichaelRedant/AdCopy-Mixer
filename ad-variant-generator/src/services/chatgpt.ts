@@ -122,11 +122,12 @@ export const remixScoreTip = async (
   metric: ScoreMetricKey,
   currentTip: string,
   signal?: AbortSignal,
-): Promise<{ tip: string; variant: AdVariant }> => {
+): Promise<string> => {
   const messages: ChatMessage[] = [
     { role: 'system', content: 'Je bent een conversiecopy-coach die concrete verbeteracties formuleert.' },
     { role: 'user', content: buildTipRemixPrompt(metric, currentTip, variant) },
   ];
 
-  return callChatCompletion<{ tip: string; variant: AdVariant }>(apiKey, model, messages, signal);
+  const response = await callChatCompletion<{ tip: string }>(apiKey, model, messages, signal);
+  return response.tip;
 };

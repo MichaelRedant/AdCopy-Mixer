@@ -43,5 +43,5 @@ export const buildTipRemixPrompt = (
   currentTip: string,
   variant: AdVariant,
 ): string => {
-  return `Je bent een performance copywriter die advertentievarianten direct verbetert.\nDoel:\n- Pas de variant aan zodat het verbeterpunt voor "${metricLabels[metric]}" concreet wordt toegepast.\n- Herschrijf de bestaande tip zodat deze uitlegt wat er nu beter is.\n- Houd tone-of-voice en platformlimieten van de inputvariant aan.\nGeef ALLEEN JSON volgens schema:\n{\n  "tip": "max twee korte zinnen",\n  "variant": {\n    "platform": "meta|google|linkedin|x|instagram",\n    "headline": "string of string[]",\n    "primaryText": "string",\n    "description": "string",\n    "cta": "string",\n    "notes": "optioneel"\n  }\n}\nOriginele advertentie:\n${JSON.stringify(variant, null, 2)}\nVorige tip:\n"${currentTip}"`;
+  return `Herschrijf alleen de verbeteringstip voor de dimensie "${metricLabels[metric]}".\n- Houd vast aan hetzelfde advies maar maak het concreter en actiegerichter.\n- Gebruik maximaal twee korte zinnen, geen opsommingstekens of emoji's.\n- Houd taal en tone-of-voice gelijk aan de advertentievariant.\nGeef ALLEEN JSON:\n{\n  "tip": "..."\n}\nAdvertentievariant:\n${JSON.stringify(variant, null, 2)}\nHuidige tip:\n"${currentTip}"`;
 };
