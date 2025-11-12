@@ -46,6 +46,11 @@ export const MODEL_OPTIONS: { value: GptModel; label: string; description: strin
     label: 'GPT-4.1 mini',
     description: 'Biedt balans tussen snelheid en creativiteit met recente data.',
   },
+  {
+    value: 'gpt-5',
+    label: 'GPT-5',
+    description: 'Meest geavanceerde taalgevoel en nuance voor veeleisende campagnes.',
+  },
 ];
 
 export const VIBE_OPTIONS: { value: VibePreset; label: string }[] = [

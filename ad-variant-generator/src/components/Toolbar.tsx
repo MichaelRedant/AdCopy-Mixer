@@ -44,6 +44,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         >
           <option value="nl-NL">Nederlands (NL)</option>
           <option value="nl-BE">Nederlands (BE)</option>
+          <option value="fr-BE">Nederlands FR (Waals Frans - BE)</option>
           <option value="en-GB">English (UK)</option>
           <option value="en-US">English (US)</option>
           <option value="fr-FR">Français (FR)</option>

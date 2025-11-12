@@ -91,7 +91,15 @@ export const scoreVariant = async (
     { role: 'user', content: buildScoringPrompt(variant) },
   ];
 
-  const response = await callChatCompletion<{ clarity: number; emotion: number; distinctiveness: number; ctaStrength: number; total: number; tip: string }>(
+  const response = await callChatCompletion<{
+    clarity: { score: number; tip: string };
+    emotion: { score: number; tip: string };
+    distinctiveness: { score: number; tip: string };
+    ctaStrength: { score: number; tip: string };
+    total: number;
+    summary: string;
+    overallTip: string;
+  }>(
     apiKey,
     model,
     messages,
