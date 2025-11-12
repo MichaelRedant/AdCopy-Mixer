@@ -26,7 +26,21 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
   return (
     <section className="form-panel" aria-label="Invoerformulier">
       <div className="form-row">
+        <label htmlFor="bedrijf">Bedrijfsnaam</label>
+        <p className="form-help">Vul de naam in zoals klanten je kennen. Dit helpt het model om consistente merkverwijzingen te gebruiken.</p>
+        <input
+          id="bedrijf"
+          name="bedrijf"
+          type="text"
+          value={values.bedrijf}
+          onChange={handleInputChange}
+          maxLength={120}
+          required
+        />
+      </div>
+      <div className="form-row">
         <label htmlFor="product">Product / Aanbod</label>
+        <p className="form-help">Beschrijf in een paar zinnen wat je aanbiedt en waarom het relevant is.</p>
         <textarea
           id="product"
           name="product"
@@ -38,6 +52,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
       </div>
       <div className="form-row">
         <label htmlFor="doelgroep">Doelgroep</label>
+        <p className="form-help">Omschrijf wie je wilt aanspreken. Denk aan beroep, situatie of uitdaging.</p>
         <textarea
           id="doelgroep"
           name="doelgroep"
@@ -50,6 +65,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
       <div className="form-grid">
         <div className="form-row">
           <label htmlFor="regio">Land / Regio</label>
+          <p className="form-help">Geef aan waar je campagne loopt zodat de toon en voorbeelden daarop aansluiten.</p>
           <input
             id="regio"
             name="regio"
@@ -63,6 +79,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
       <div className="form-grid">
         <div className="form-row">
           <label htmlFor="usp">Voordelen / USP</label>
+          <p className="form-help">Som je belangrijkste troeven op. Hoe help je de klant concreet vooruit?</p>
           <textarea
             id="usp"
             name="usp"
@@ -73,6 +90,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
         </div>
         <div className="form-row">
           <label htmlFor="diff">Differentiator</label>
+          <p className="form-help">Leg uit waarin je afwijkt van concurrenten. Denk aan prijs, service of aanpak.</p>
           <textarea
             id="diff"
             name="diff"
@@ -85,6 +103,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
       <div className="form-grid">
         <div className="form-row">
           <label htmlFor="bezwaren">Bezwaren om te pareren</label>
+          <p className="form-help">Welke twijfels hoor je vaak? Geef ze mee zodat het model ze kan neutraliseren.</p>
           <textarea
             id="bezwaren"
             name="bezwaren"
@@ -95,6 +114,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
         </div>
         <div className="form-row">
           <label htmlFor="tone">Tone of voice</label>
+          <p className="form-help">Omschrijf hoe de advertentie moet klinken: speels, zakelijk, warm, …</p>
           <textarea
             id="tone"
             name="tone"
@@ -107,6 +127,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
       <div className="form-grid">
         <div className="form-row">
           <label htmlFor="verplicht">Verplichte woorden / claims</label>
+          <p className="form-help">Noteer wettelijke vermeldingen of merkslogans die zeker terug moeten komen.</p>
           <textarea
             id="verplicht"
             name="verplicht"
@@ -117,6 +138,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
         </div>
         <div className="form-row select-row">
           <label htmlFor="platform">Platform</label>
+          <p className="form-help">Kies waar de advertentie verschijnt zodat het model de juiste lengte en stijl hanteert.</p>
           <select id="platform" name="platform" value={values.platform} onChange={handleInputChange}>
             {platformOptions.map((option) => (
               <option key={option.value} value={option.value}>
@@ -127,6 +149,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
         </div>
         <div className="form-row select-row">
           <label htmlFor="vibe">Vibe</label>
+          <p className="form-help">Selecteer de creatieve richting die bij je merk past.</p>
           <select id="vibe" name="vibe" value={values.vibe} onChange={handleInputChange}>
             {VIBE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -137,6 +160,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
         </div>
         <div className="form-row select-row">
           <label htmlFor="doel">Doelstelling</label>
+          <p className="form-help">Wat wil je bereiken met deze campagne: klikken, conversies of naamsbekendheid?</p>
           <select id="doel" name="doel" value={values.doel} onChange={handleInputChange}>
             <option value="CTR">CTR</option>
             <option value="conversie">Conversie</option>

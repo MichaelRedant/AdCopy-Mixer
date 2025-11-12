@@ -1,5 +1,7 @@
 export type Platform = 'meta' | 'google' | 'linkedin' | 'x' | 'instagram';
 
+export type GptModel = 'gpt-4o-mini' | 'gpt-4o' | 'gpt-4.1-mini';
+
 export type VibePreset =
   | 'playful'
   | 'urgent'
@@ -19,6 +21,7 @@ export type RemixIntent =
   | 'meer premium';
 
 export interface FormValues {
+  bedrijf: string;
   product: string;
   doelgroep: string;
   usp: string;
@@ -32,6 +35,7 @@ export interface FormValues {
   taal: string;
   regio: string;
   variantCount: number;
+  model: GptModel;
 }
 
 export interface AdVariant {
@@ -81,6 +85,7 @@ export interface Settings {
   defaultPlatform: Platform;
   defaultVibe: VibePreset;
   nVariants: number;
+  defaultModel: GptModel;
 }
 
 export interface ToastMessage {
