@@ -1,4 +1,4 @@
-import { FormValues, VibePreset } from '../types';
+import { FormValues, GptModel, VibePreset } from '../types';
 
 export const VIBE_COLORS: Record<VibePreset, string> = {
   playful: '#ff9b73',
@@ -13,6 +13,7 @@ export const VIBE_COLORS: Record<VibePreset, string> = {
 };
 
 export const DEFAULT_FORM_VALUES: FormValues = {
+  bedrijf: '',
   product: '',
   doelgroep: '',
   usp: '',
@@ -26,7 +27,26 @@ export const DEFAULT_FORM_VALUES: FormValues = {
   taal: 'nl-BE',
   regio: 'België',
   variantCount: 4,
+  model: 'gpt-4o-mini',
 };
+
+export const MODEL_OPTIONS: { value: GptModel; label: string; description: string }[] = [
+  {
+    value: 'gpt-4o-mini',
+    label: 'GPT-4o mini',
+    description: 'Snel en voordelig – ideaal voor snelle iteraties en concepten.',
+  },
+  {
+    value: 'gpt-4o',
+    label: 'GPT-4o',
+    description: 'Sterker in nuance en kwaliteit – gebruik voor kritieke campagnes.',
+  },
+  {
+    value: 'gpt-4.1-mini',
+    label: 'GPT-4.1 mini',
+    description: 'Biedt balans tussen snelheid en creativiteit met recente data.',
+  },
+];
 
 export const VIBE_OPTIONS: { value: VibePreset; label: string }[] = [
   { value: 'playful', label: 'Playful' },

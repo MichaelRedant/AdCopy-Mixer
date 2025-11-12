@@ -13,11 +13,19 @@ export const loadSettings = (): Settings => {
       defaultPlatform: 'meta',
       defaultVibe: 'playful',
       nVariants: 4,
+      defaultModel: 'gpt-4o-mini',
     };
   }
 
   try {
-    return JSON.parse(stored) as Settings;
+    const parsed = JSON.parse(stored) as Partial<Settings>;
+    return {
+      language: parsed.language ?? 'nl-BE',
+      defaultPlatform: parsed.defaultPlatform ?? 'meta',
+      defaultVibe: parsed.defaultVibe ?? 'playful',
+      nVariants: parsed.nVariants ?? 4,
+      defaultModel: parsed.defaultModel ?? 'gpt-4o-mini',
+    };
   } catch (error) {
     console.warn('Kon instellingen niet lezen, val terug op standaardwaarden.');
     return {
@@ -25,6 +33,7 @@ export const loadSettings = (): Settings => {
       defaultPlatform: 'meta',
       defaultVibe: 'playful',
       nVariants: 4,
+      defaultModel: 'gpt-4o-mini',
     };
   }
 };

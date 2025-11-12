@@ -1,15 +1,18 @@
-import { AdVariant, FormValues, RemixIntent, VariantScore } from '../types';
+import { AdVariant, FormValues, GptModel, RemixIntent, VariantScore } from '../types';
 import { SYSTEM_PROMPT, buildRemixPrompt, buildScoringPrompt, buildUserPrompt } from '../utils/promptBuilders';
 
 const CHAT_COMPLETIONS_URL = 'https://api.openai.com/v1/chat/completions';
-const DEFAULT_MODEL = 'gpt-4o-mini';
-
 interface ChatMessage {
   role: 'system' | 'user';
   content: string;
 }
 
-const callChatCompletion = async <T>(apiKey: string, messages: ChatMessage[], signal?: AbortSignal): Promise<T> => {
+const callChatCompletion = async <T>(
+  apiKey: string,
+  model: GptModel,
+  messages: ChatMessage[],
+  signal?: AbortSignal,
+): Promise<T> => {
   const response = await fetch(CHAT_COMPLETIONS_URL, {
     method: 'POST',
     headers: {
@@ -17,7 +20,7 @@ const callChatCompletion = async <T>(apiKey: string, messages: ChatMessage[], si
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: DEFAULT_MODEL,
+      model,
       temperature: 0.7,
       response_format: { type: 'json_object' },
       messages,
@@ -45,6 +48,7 @@ const callChatCompletion = async <T>(apiKey: string, messages: ChatMessage[], si
 
 export const generateVariants = async (
   apiKey: string,
+  model: GptModel,
   values: FormValues,
   options?: { extraInstruction?: string },
   signal?: AbortSignal,
@@ -58,11 +62,12 @@ export const generateVariants = async (
     messages.push({ role: 'user', content: options.extraInstruction });
   }
 
-  return callChatCompletion(apiKey, messages, signal);
+  return callChatCompletion(apiKey, model, messages, signal);
 };
 
 export const remixVariant = async (
   apiKey: string,
+  model: GptModel,
   intent: RemixIntent,
   variant: AdVariant,
   signal?: AbortSignal,
@@ -72,11 +77,12 @@ export const remixVariant = async (
     { role: 'user', content: buildRemixPrompt(intent, variant) },
   ];
 
-  return callChatCompletion(apiKey, messages, signal);
+  return callChatCompletion(apiKey, model, messages, signal);
 };
 
 export const scoreVariant = async (
   apiKey: string,
+  model: GptModel,
   variant: AdVariant,
   signal?: AbortSignal,
 ): Promise<VariantScore> => {
@@ -87,6 +93,7 @@ export const scoreVariant = async (
 
   const response = await callChatCompletion<{ clarity: number; emotion: number; distinctiveness: number; ctaStrength: number; total: number; tip: string }>(
     apiKey,
+    model,
     messages,
     signal,
   );

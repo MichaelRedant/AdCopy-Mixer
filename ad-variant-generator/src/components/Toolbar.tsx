@@ -1,6 +1,6 @@
 import React from 'react';
-import { VibePreset } from '../types';
-import { VIBE_COLORS } from '../utils/constants';
+import { GptModel, VibePreset } from '../types';
+import { MODEL_OPTIONS, VIBE_COLORS } from '../utils/constants';
 
 interface ToolbarProps {
   language: string;
@@ -10,6 +10,8 @@ interface ToolbarProps {
   selectedPreset: VibePreset;
   onPresetChange: (preset: VibePreset) => void;
   onToggleFavorites: () => void;
+  model: GptModel;
+  onModelChange: (model: GptModel) => void;
   advice?: string;
   isGenerating: boolean;
   children?: React.ReactNode;
@@ -23,10 +25,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
   selectedPreset,
   onPresetChange,
   onToggleFavorites,
+  model,
+  onModelChange,
   advice,
   isGenerating,
   children,
 }) => {
+  const selectedModel = MODEL_OPTIONS.find((option) => option.value === model);
+
   return (
     <header className="toolbar" aria-label="Instellingen">
       <div className="toolbar-group">
@@ -53,6 +59,22 @@ const Toolbar: React.FC<ToolbarProps> = ({
           value={variantCount}
           onChange={(event) => onVariantCountChange(Number(event.target.value))}
         />
+        <p className="toolbar-help">Tip: 3-6 varianten geeft genoeg om te testen zonder te overladen.</p>
+      </div>
+      <div className="toolbar-group">
+        <label htmlFor="model-select">GPT-model</label>
+        <select
+          id="model-select"
+          value={model}
+          onChange={(event) => onModelChange(event.target.value as GptModel)}
+        >
+          {MODEL_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value} title={option.description}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        {selectedModel && <p className="toolbar-help">{selectedModel.description}</p>}
       </div>
       <div className="toolbar-group presets" role="group" aria-label="Vibe presets">
         {Object.entries(VIBE_COLORS).map(([preset, color]) => (

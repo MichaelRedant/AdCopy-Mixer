@@ -56,6 +56,7 @@ const App: React.FC = () => {
       platform: settings.defaultPlatform,
       vibe: settings.defaultVibe,
       variantCount: settings.nVariants,
+      model: settings.defaultModel,
     }));
     setFavorites(favs);
     setHistory(hist);
@@ -90,6 +91,7 @@ const App: React.FC = () => {
       defaultPlatform: changes.platform ?? settings.defaultPlatform,
       defaultVibe: changes.vibe ?? settings.defaultVibe,
       nVariants: changes.variantCount ?? settings.nVariants,
+      defaultModel: changes.model ?? settings.defaultModel,
     };
     saveSettings(merged);
   }, []);
@@ -110,7 +112,12 @@ const App: React.FC = () => {
       const cached = findHistoryMatch(history, snapshot);
       let result = cached?.result;
       if (!result) {
-        result = await generateVariants(apiKey, snapshot, extraInstruction ? { extraInstruction } : undefined);
+        result = await generateVariants(
+          apiKey,
+          snapshot.model,
+          snapshot,
+          extraInstruction ? { extraInstruction } : undefined,
+        );
         const entry: HistoryEntry = {
           id: createId(),
           inputs: snapshot,
@@ -134,7 +141,7 @@ const App: React.FC = () => {
       });
       setVariants(enriched);
       setAdvice(result.advice);
-      await scoreVariants(enriched);
+      await scoreVariants(enriched, snapshot.model);
       pushToast('success', 'Advertentievarianten gegenereerd.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Onbekende fout bij genereren';
@@ -147,7 +154,7 @@ const App: React.FC = () => {
     }
   };
 
-  const scoreVariants = async (items: VariantWithMeta[]) => {
+  const scoreVariants = async (items: VariantWithMeta[], model: FormValues['model']) => {
     if (!apiKey) return;
     for (const item of items) {
       setVariants((current) =>
@@ -156,7 +163,7 @@ const App: React.FC = () => {
         ),
       );
       try {
-        const score = await scoreVariant(apiKey, item.variant);
+        const score = await scoreVariant(apiKey, model, item.variant);
         setVariants((current) =>
           current.map((entry) =>
             entry.variant.id === item.variant.id
@@ -184,7 +191,7 @@ const App: React.FC = () => {
     const target = variants.find((item) => item.variant.id === variantId);
     if (!target) return;
     try {
-      const response = await remixVariant(apiKey, intent, target.variant);
+      const response = await remixVariant(apiKey, formValues.model, intent, target.variant);
       const remix = response.variants[0];
       const withId = { ...remix, id: createId() };
       const updated: VariantWithMeta = {
@@ -197,7 +204,7 @@ const App: React.FC = () => {
         current.map((entry) => (entry.variant.id === variantId ? updated : entry)),
       );
       setAdvice(response.advice ?? advice);
-      await scoreVariants([updated]);
+      await scoreVariants([updated], formValues.model);
       pushToast('success', 'Variant geremixt.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Remix mislukt';
@@ -237,7 +244,7 @@ const App: React.FC = () => {
   const handleScore = (variantId: string) => {
     const item = variants.find((entry) => entry.variant.id === variantId);
     if (!item) return;
-    scoreVariants([item]);
+    scoreVariants([item], formValues.model);
   };
 
   const handleFavoriteCopy = async (favorite: FavoriteVariant) => {
@@ -265,6 +272,7 @@ const App: React.FC = () => {
       platform: formValues.platform,
       vibe: formValues.vibe,
       variantCount: formValues.variantCount,
+      model: formValues.model,
     });
   };
 
@@ -285,6 +293,8 @@ const App: React.FC = () => {
         selectedPreset={formValues.vibe}
         onPresetChange={(preset) => handleSettingsChange({ vibe: preset })}
         onToggleFavorites={handleToggleFavorites}
+        model={formValues.model}
+        onModelChange={(value) => handleSettingsChange({ model: value })}
         advice={advice}
         isGenerating={isGenerating}
       >
