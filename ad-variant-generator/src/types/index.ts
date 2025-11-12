@@ -1,6 +1,11 @@
 export type Platform = 'meta' | 'google' | 'linkedin' | 'x' | 'instagram';
 
-export type GptModel = 'gpt-4o-mini' | 'gpt-4o' | 'gpt-4.1-mini';
+export type GptModel = 'gpt-4o-mini' | 'gpt-4o' | 'gpt-4.1-mini' | 'gpt-5';
+
+export interface MetricDetail {
+  score: number;
+  tip: string;
+}
 
 export type VibePreset =
   | 'playful'
@@ -49,12 +54,13 @@ export interface AdVariant {
 }
 
 export interface VariantScore {
-  clarity: number;
-  emotion: number;
-  distinctiveness: number;
-  ctaStrength: number;
+  clarity: MetricDetail;
+  emotion: MetricDetail;
+  distinctiveness: MetricDetail;
+  ctaStrength: MetricDetail;
   total: number;
-  tip: string;
+  summary: string;
+  overallTip: string;
   updatedAt: number;
 }
 
