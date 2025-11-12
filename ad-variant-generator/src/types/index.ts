@@ -1,5 +1,7 @@
 export type Platform = 'meta' | 'google' | 'linkedin' | 'x' | 'instagram';
 
+export type AdFormat = 'text' | 'image' | 'carousel' | 'video';
+
 export type GptModel = 'gpt-4o-mini' | 'gpt-4o' | 'gpt-4.1-mini' | 'gpt-5';
 
 export interface MetricDetail {
@@ -35,6 +37,8 @@ export interface FormValues {
   tone: string;
   verplicht: string;
   platform: Platform;
+  adFormat: AdFormat;
+  assetDescription: string;
   vibe: VibePreset;
   doel: 'CTR' | 'conversie' | 'awareness';
   taal: string;

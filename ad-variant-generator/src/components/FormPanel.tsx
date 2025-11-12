@@ -17,6 +17,13 @@ const platformOptions: { value: Platform; label: string }[] = [
   { value: 'instagram', label: 'Instagram' },
 ];
 
+const adFormatOptions = [
+  { value: 'text', label: 'Tekstadvertentie' },
+  { value: 'image', label: 'Afbeelding' },
+  { value: 'carousel', label: 'Carousel' },
+  { value: 'video', label: 'Video' },
+];
+
 const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGenerating }) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
@@ -148,6 +155,17 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
           </select>
         </div>
         <div className="form-row select-row">
+          <label htmlFor="adFormat">Advertentieformat</label>
+          <p className="form-help">Bepaal of het om een tekstuele, beeld-, carousel- of videoadvertentie gaat.</p>
+          <select id="adFormat" name="adFormat" value={values.adFormat} onChange={handleInputChange}>
+            {adFormatOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-row select-row">
           <label htmlFor="vibe">Vibe</label>
           <p className="form-help">Selecteer de creatieve richting die bij je merk past.</p>
           <select id="vibe" name="vibe" value={values.vibe} onChange={handleInputChange}>
@@ -168,6 +186,22 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
           </select>
         </div>
       </div>
+      {values.adFormat !== 'text' && (
+        <div className="form-row">
+          <label htmlFor="assetDescription">Omschrijving van je visual / video</label>
+          <p className="form-help">
+            Beschrijf wat er op de afbeelding, carousel-slides of video te zien is. Zo kan de copy perfect inhaken op het beeld.
+          </p>
+          <textarea
+            id="assetDescription"
+            name="assetDescription"
+            value={values.assetDescription}
+            onChange={handleInputChange}
+            maxLength={500}
+            required={values.adFormat !== 'text'}
+          />
+        </div>
+      )}
       <div className="form-actions">
         <button type="button" className="primary" onClick={onSubmit} disabled={isGenerating}>
           {isGenerating ? 'Genereren…' : 'Genereer varianten'}

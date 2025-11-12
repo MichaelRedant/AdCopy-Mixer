@@ -15,6 +15,11 @@ Dit document beschrijft de belangrijkste bouwstenen van AdCopy Mixer en geeft ri
 4. Variants worden weergegeven in `VariantCard` componenten en kunnen worden geremixed via helpers in `src/utils/remix.ts`.
 5. Favorieten worden opgeslagen met helpers uit `src/utils/storage.ts` en weergegeven in de `FavoritesDrawer`.
 
+## Creatieve formats
+- `FormPanel` laat gebruikers nu een `adFormat` kiezen (`text`, `image`, `carousel`, `video`).
+- Niet-tekstuele formats vragen een `assetDescription` zodat prompts de daadwerkelijke visuals (beeld, slides of video-scenes) kunnen benoemen.
+- `buildUserPrompt` voegt format-gebonden richtlijnen en notes-instructies toe, zodat het model weet wanneer het overlaytekst of slide-hooks moet leveren.
+
 ## Styling
 - Globale layout staat in `src/styles/globals.css` (CSS Grid voor variant-overzicht, modals, etc.).
 - Component-specifieke stijlen horen bij voorkeur in hetzelfde bestand als de component of in submappen onder `src/styles/`.

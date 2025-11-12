@@ -22,6 +22,8 @@ export const DEFAULT_FORM_VALUES: FormValues = {
   tone: '',
   verplicht: '',
   platform: 'meta',
+  adFormat: 'text',
+  assetDescription: '',
   vibe: 'playful',
   doel: 'CTR',
   taal: 'nl-BE',
