@@ -303,7 +303,46 @@ const App: React.FC = () => {
 
       <main className="layout">
         <section className="content">
-          <FormPanel values={formValues} onChange={handleSettingsChange} onSubmit={handleFormSubmit} isGenerating={isGenerating} />
+          <div className="content-grid">
+            <FormPanel
+              values={formValues}
+              onChange={handleSettingsChange}
+              onSubmit={handleFormSubmit}
+              isGenerating={isGenerating}
+            />
+            <section className="help-panel glass-panel" aria-label="Help en credits">
+              <div className="help-header">
+                <span className="help-badge">Xinudesign</span>
+                <h2>Help & credits</h2>
+              </div>
+              <p className="help-intro">
+                Deze interface is vormgegeven door <strong>Michaël Redant</strong>, het creatieve brein achter Xinudesign. Zijn
+                focus op glasheldere flows en zachte micro-animaties vertaalt de Apple Liquid Glass stijl naar AdCopy Mixer.
+              </p>
+              <ul className="help-list">
+                <li>Gebruik de preset-knoppen om razendsnel de juiste vibe te selecteren.</li>
+                <li>Laat het model 3-6 varianten genereren en vergelijk de scores voor snelle experimenten.</li>
+                <li>Bewaar favorieten en exporteer ze om direct met je marketingteam te delen.</li>
+              </ul>
+              <div className="promo-card">
+                <h3>Extra hulp nodig?</h3>
+                <p>
+                  Voor branding, campagnes of een frisse UX-aanpak kun je terecht bij Xinudesign. Michaël denkt graag mee over
+                  jouw volgende digitale ervaring.
+                </p>
+              </div>
+              <div className="promo-card highlight">
+                <h3>Tip uit eigen keuken</h3>
+                <p>
+                  Zin in tastbare prototypes of gepersonaliseerde merch? Bekijk de mogelijkheden bij{' '}
+                  <a href="https://www.x3dprints.be" target="_blank" rel="noreferrer">
+                    X3DPrints.be
+                  </a>
+                  , het 3D-printatelier van Michaël voor kmo's en particulieren.
+                </p>
+              </div>
+            </section>
+          </div>
           {needsReformat && (
             <button type="button" className="secondary reformat" onClick={handleReformat}>
               Opnieuw formatteren

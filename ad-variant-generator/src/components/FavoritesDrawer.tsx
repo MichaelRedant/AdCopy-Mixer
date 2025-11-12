@@ -31,7 +31,7 @@ const FavoritesDrawer: React.FC<FavoritesDrawerProps> = ({ favorites, isOpen, on
   }
 
   return (
-    <aside className="favorites-drawer" aria-label="Favorieten">
+    <aside className="favorites-drawer glass-drawer" aria-label="Favorieten">
       <div className="drawer-header">
         <h2>Favorieten</h2>
         <button type="button" onClick={onClose} aria-label="Sluit favorieten">×</button>
