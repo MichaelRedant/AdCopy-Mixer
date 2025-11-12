@@ -24,7 +24,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
   };
 
   return (
-    <section className="form-panel" aria-label="Invoerformulier">
+    <section className="form-panel glass-panel" aria-label="Invoerformulier">
       <div className="form-row">
         <label htmlFor="bedrijf">Bedrijfsnaam</label>
         <p className="form-help">Vul de naam in zoals klanten je kennen. Dit helpt het model om consistente merkverwijzingen te gebruiken.</p>

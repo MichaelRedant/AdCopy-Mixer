@@ -74,7 +74,7 @@ const VariantCard: React.FC<VariantCardProps> = ({ item, accentColor, onRemix, o
   const score = normaliseScore(rawScore);
 
   return (
-    <article className="variant-card" style={{ borderTopColor: accentColor }}>
+    <article className="variant-card glass-panel" style={{ borderTopColor: accentColor }}>
       <header>
         <span className="platform-tag">{variant.platform}</span>
         <div className="headline-group">
