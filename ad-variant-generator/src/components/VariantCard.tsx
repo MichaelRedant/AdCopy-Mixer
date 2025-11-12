@@ -166,7 +166,7 @@ const VariantCard: React.FC<VariantCardProps> = ({
                       onClick={() => onRemixTip(variant.id, metric.key)}
                       disabled={isRemixingTip}
                     >
-                      {isRemixingTip ? 'Tip toepassen…' : 'Pas tip toe op copy'}
+                      {isRemixingTip ? 'Tip genereren…' : 'Remix deze tip'}
                     </button>
                   </div>
                 </div>

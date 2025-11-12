@@ -38,21 +38,10 @@ const metricLabels: Record<ScoreMetricKey, string> = {
   ctaStrength: 'CTA-sterkte',
 };
 
-const metricFocusGuidance: Record<ScoreMetricKey, string> = {
-  clarity:
-    'Focus op headline en primary text. Splits lange zinnen, verwijder herhalingen en zorg dat de kernboodschap in de eerste zin duidelijk is. Pas de CTA alleen aan als de tip daar expliciet om vraagt.',
-  emotion:
-    'Gebruik krachtige benefit-first zinnen in primary text en description om gevoel op te wekken. Voeg 1 concrete emotionele trigger toe (bijv. een belofte of angst voor gemiste kans) maar behoud platformlimieten.',
-  distinctiveness:
-    'Leg meer nadruk op het unieke aanbod. Actualiseer headline, primary text en eventueel notes met een duidelijk differentiërend element dat niet in de huidige variant zit.',
-  ctaStrength:
-    "Pas in elk geval het veld 'cta' aan. Als de tip een specifieke CTA in quotes bevat, neem die letterlijk over. Voeg indien nodig één ondersteunende zin in primary text of description toe die de CTA logischer maakt.",
-};
-
-export const buildTipApplicationPrompt = (
+export const buildTipRemixPrompt = (
   metric: ScoreMetricKey,
   currentTip: string,
   variant: AdVariant,
 ): string => {
-  return `Je bent een performance copywriter die advertentievarianten direct verbetert.\nDoel:\n- Pas de copy zodanig aan dat het verbeterpunt voor "${metricLabels[metric]}" uit de tip volledig wordt toegepast.\n- Focus: ${metricFocusGuidance[metric]}\n- Als de tip letterlijke copy voorstelt, neem die tekst ongewijzigd over in het relevante veld.\n- Wijzig alleen de velden die echt nodig zijn om het advies te realiseren en behoud tone-of-voice en platformlimieten.\n- Lever enkel een nieuwe variant terug; de originele tip blijft zichtbaar in de scorekaart.\nGeef ALLEEN JSON volgens schema:\n{\n  "variant": {\n    "platform": "meta|google|linkedin|x|instagram",\n    "headline": "string of string[]",\n    "primaryText": "string",\n    "description": "string",\n    "cta": "string",\n    "notes": "optioneel"\n  }\n}\nOriginele advertentie:\n${JSON.stringify(variant, null, 2)}\nTip die moet worden toegepast:\n"${currentTip}"`;
+  return `Herschrijf alleen de verbeteringstip voor de dimensie "${metricLabels[metric]}".\n- Houd vast aan hetzelfde advies maar maak het concreter en actiegerichter.\n- Gebruik maximaal twee korte zinnen, geen opsommingstekens of emoji's.\n- Houd taal en tone-of-voice gelijk aan de advertentievariant.\nGeef ALLEEN JSON:\n{\n  "tip": "..."\n}\nAdvertentievariant:\n${JSON.stringify(variant, null, 2)}\nHuidige tip:\n"${currentTip}"`;
 };

@@ -4,7 +4,7 @@ import {
   buildRemixPrompt,
   buildScoringPrompt,
   buildUserPrompt,
-  buildTipApplicationPrompt,
+  buildTipRemixPrompt,
 } from '../utils/promptBuilders';
 
 const CHAT_COMPLETIONS_URL = 'https://api.openai.com/v1/chat/completions';
@@ -122,11 +122,12 @@ export const remixScoreTip = async (
   metric: ScoreMetricKey,
   currentTip: string,
   signal?: AbortSignal,
-): Promise<{ variant: AdVariant }> => {
+): Promise<string> => {
   const messages: ChatMessage[] = [
     { role: 'system', content: 'Je bent een conversiecopy-coach die concrete verbeteracties formuleert.' },
-    { role: 'user', content: buildTipApplicationPrompt(metric, currentTip, variant) },
+    { role: 'user', content: buildTipRemixPrompt(metric, currentTip, variant) },
   ];
 
-  return callChatCompletion<{ variant: AdVariant }>(apiKey, model, messages, signal);
+  const response = await callChatCompletion<{ tip: string }>(apiKey, model, messages, signal);
+  return response.tip;
 };

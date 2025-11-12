@@ -312,40 +312,23 @@ const App: React.FC = () => {
 
     setTipLoading(variantId, metric, true);
     try {
-      const { variant: improvedVariant } = await remixScoreTip(
-        apiKey,
-        formValues.model,
-        target.variant,
-        metric,
-        currentTip,
-      );
-
-      const mergedVariant = {
-        ...target.variant,
-        ...improvedVariant,
-        id: target.variant.id,
-      };
-
-      const updatedEntry: VariantWithMeta = {
-        ...target,
-        variant: mergedVariant,
-        warnings: getLengthWarnings(mergedVariant),
-      };
-
+      const tip = await remixScoreTip(apiKey, formValues.model, target.variant, metric, currentTip);
       setVariants((existing) =>
-        existing.map((entry) => (entry.variant.id === variantId ? updatedEntry : entry)),
+        existing.map((entry) => {
+          if (entry.variant.id !== variantId || !entry.score) {
+            return entry;
+          }
+          return {
+            ...entry,
+            score: {
+              ...entry.score,
+              updatedAt: Date.now(),
+              [metric]: { ...entry.score[metric], tip },
+            },
+          };
+        }),
       );
-
-      const changedFields = describeVariantChanges(target.variant, mergedVariant);
-      const changeSummary =
-        changedFields.length > 0
-          ? `Copy aangepast (${changedFields.join(', ')})`
-          : 'Copy aangepast volgens tip';
-
-      pushToast('info', `${changeSummary}. Score wordt herberekend…`);
-
-      await scoreVariants([updatedEntry], formValues.model);
-      pushToast('success', 'Scorekaart geüpdatet op basis van de toegepaste tip.');
+      pushToast('success', 'Nieuwe tip klaargestoomd.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Tip remix mislukt';
       pushToast('error', message);
