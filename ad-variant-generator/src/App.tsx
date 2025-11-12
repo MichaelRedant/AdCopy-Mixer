@@ -8,6 +8,7 @@ import VariantCard from './components/VariantCard';
 import { useToasts } from './hooks/useToasts';
 import { remixVariant, scoreVariant, generateVariants, remixScoreTip } from './services/chatgpt';
 import {
+  AdVariant,
   FavoriteVariant,
   FormValues,
   HistoryEntry,
@@ -31,6 +32,29 @@ const createId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2);
+
+const VARIANT_FIELD_LABELS: Record<keyof Pick<AdVariant, 'headline' | 'primaryText' | 'description' | 'cta' | 'notes'>, string> = {
+  headline: 'headline',
+  primaryText: 'primary text',
+  description: 'description',
+  cta: 'CTA',
+  notes: 'notes',
+};
+
+const trackedVariantFields = Object.keys(VARIANT_FIELD_LABELS) as Array<keyof typeof VARIANT_FIELD_LABELS>;
+
+const toComparableValue = (value: AdVariant['headline'] | string | undefined) => {
+  if (Array.isArray(value)) {
+    return value.join(' | ');
+  }
+  return value ?? '';
+};
+
+const describeVariantChanges = (before: AdVariant, after: AdVariant): string[] => {
+  return trackedVariantFields.filter((field) => toComparableValue(before[field]) !== toComparableValue(after[field])).map(
+    (field) => VARIANT_FIELD_LABELS[field],
+  );
+};
 
 const App: React.FC = () => {
   const [apiKey, setApiKey] = useState<string | null>(null);
