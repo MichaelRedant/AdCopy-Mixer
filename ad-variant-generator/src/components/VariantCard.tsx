@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { RemixIntent, VariantScore, VariantWithMeta } from '../types';
+import { RemixIntent, VariantScore, VariantWithMeta, ScoreMetricKey } from '../types';
 
-const METRIC_CONFIG = [
+const METRIC_CONFIG: { key: ScoreMetricKey; label: string; description: string }[] = [
   {
     key: 'clarity',
     label: 'Duidelijkheid',
@@ -31,6 +31,8 @@ interface VariantCardProps {
   onCopy: (variantId: string) => void;
   onSave: (variantId: string) => void;
   onScore: (variantId: string) => void;
+  onRemixTip: (variantId: string, metric: ScoreMetricKey) => void;
+  remixingTips?: Partial<Record<ScoreMetricKey, boolean>>;
 }
 
 const remixOptions: RemixIntent[] = ['scherper', 'korter', 'krachtiger', 'informeler', 'meer premium'];
@@ -67,7 +69,16 @@ const normaliseScore = (score: VariantWithMeta['score']): VariantScore | undefin
   };
 };
 
-const VariantCard: React.FC<VariantCardProps> = ({ item, accentColor, onRemix, onCopy, onSave, onScore }) => {
+const VariantCard: React.FC<VariantCardProps> = ({
+  item,
+  accentColor,
+  onRemix,
+  onCopy,
+  onSave,
+  onScore,
+  onRemixTip,
+  remixingTips,
+}) => {
   const [selectedRemix, setSelectedRemix] = useState<RemixIntent>('scherper');
   const { variant, warnings, score: rawScore, isScoring } = item;
   const headlines = Array.isArray(variant.headline) ? variant.headline : [variant.headline];
@@ -120,22 +131,52 @@ const VariantCard: React.FC<VariantCardProps> = ({ item, accentColor, onRemix, o
       </div>
       {score && (
         <div className="scorecard">
-          <h4>Scorekaart</h4>
-          <p className="score-summary">{score.summary}</p>
-          <div className="score-grid">
-            {METRIC_CONFIG.map((metric) => (
-              <div key={metric.key} className="score-metric">
-                <div className="score-metric-header">
-                  <span>{metric.label}</span>
-                  <strong>{score[metric.key].score}/10</strong>
-                </div>
-                <p className="score-metric-description">{metric.description}</p>
-                <p className="score-metric-tip">{score[metric.key].tip}</p>
-              </div>
-            ))}
+          <div className="scorecard-header">
+            <div>
+              <h4>Scorekaart</h4>
+              <p className="score-summary">{score.summary}</p>
+            </div>
+            <div className="score-total-chip" aria-label={`Totaalscore ${score.total} op 10`}>
+              <span>Totaal</span>
+              <strong>{score.total}/10</strong>
+            </div>
           </div>
-          <p className="score-total">Totaal: {score.total}/10</p>
-          <p className="score-overall-tip">{score.overallTip}</p>
+          <div className="score-grid">
+            {METRIC_CONFIG.map((metric) => {
+              const detail = score[metric.key];
+              const isRemixingTip = remixingTips?.[metric.key];
+              return (
+                <div key={metric.key} className="score-metric">
+                  <div className="score-metric-header">
+                    <div>
+                      <p className="score-metric-label">{metric.label}</p>
+                      <p className="score-metric-description">{metric.description}</p>
+                    </div>
+                    <div className="score-metric-score">
+                      <strong>{detail.score}</strong>
+                      <span>/10</span>
+                    </div>
+                  </div>
+                  <div className="score-metric-tipbox">
+                    <span className="score-tip-label">Verbeterpunt</span>
+                    <p className="score-metric-tip">{detail.tip}</p>
+                    <button
+                      type="button"
+                      className="score-tip-button"
+                      onClick={() => onRemixTip(variant.id, metric.key)}
+                      disabled={isRemixingTip}
+                    >
+                      {isRemixingTip ? 'Tip genereren…' : 'Remix deze tip'}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="score-overall-panel">
+            <p className="score-overall-label">Overkoepelende tip</p>
+            <p className="score-overall-tip">{score.overallTip}</p>
+          </div>
         </div>
       )}
     </article>

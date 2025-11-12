@@ -1,5 +1,11 @@
-import { AdVariant, FormValues, GptModel, RemixIntent, VariantScore } from '../types';
-import { SYSTEM_PROMPT, buildRemixPrompt, buildScoringPrompt, buildUserPrompt } from '../utils/promptBuilders';
+import { AdVariant, FormValues, GptModel, RemixIntent, ScoreMetricKey, VariantScore } from '../types';
+import {
+  SYSTEM_PROMPT,
+  buildRemixPrompt,
+  buildScoringPrompt,
+  buildUserPrompt,
+  buildTipApplicationPrompt,
+} from '../utils/promptBuilders';
 
 const CHAT_COMPLETIONS_URL = 'https://api.openai.com/v1/chat/completions';
 interface ChatMessage {
@@ -107,4 +113,20 @@ export const scoreVariant = async (
   );
 
   return { ...response, updatedAt: Date.now() };
+};
+
+export const remixScoreTip = async (
+  apiKey: string,
+  model: GptModel,
+  variant: AdVariant,
+  metric: ScoreMetricKey,
+  currentTip: string,
+  signal?: AbortSignal,
+): Promise<{ variant: AdVariant }> => {
+  const messages: ChatMessage[] = [
+    { role: 'system', content: 'Je bent een conversiecopy-coach die concrete verbeteracties formuleert.' },
+    { role: 'user', content: buildTipApplicationPrompt(metric, currentTip, variant) },
+  ];
+
+  return callChatCompletion<{ variant: AdVariant }>(apiKey, model, messages, signal);
 };
