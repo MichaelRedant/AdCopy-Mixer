@@ -6,12 +6,13 @@ import ToastContainer from './components/ToastContainer';
 import Toolbar from './components/Toolbar';
 import VariantCard from './components/VariantCard';
 import { useToasts } from './hooks/useToasts';
-import { remixVariant, scoreVariant, generateVariants } from './services/chatgpt';
+import { remixVariant, scoreVariant, generateVariants, remixScoreTip } from './services/chatgpt';
 import {
   FavoriteVariant,
   FormValues,
   HistoryEntry,
   RemixIntent,
+  ScoreMetricKey,
   VariantWithMeta,
 } from './types';
 import { DEFAULT_FORM_VALUES, VIBE_COLORS } from './utils/constants';
@@ -42,6 +43,7 @@ const App: React.FC = () => {
   const [isFavoritesOpen, setFavoritesOpen] = useState(false);
   const [needsReformat, setNeedsReformat] = useState(false);
   const [lastInputs, setLastInputs] = useState<FormValues | null>(null);
+  const [tipProgress, setTipProgress] = useState<Record<string, Partial<Record<ScoreMetricKey, boolean>>>>({});
 
   const { toasts, pushToast, removeToast } = useToasts();
 
@@ -247,6 +249,84 @@ const App: React.FC = () => {
     scoreVariants([item], formValues.model);
   };
 
+  const setTipLoading = (variantId: string, metric: ScoreMetricKey, isLoading: boolean) => {
+    setTipProgress((current) => {
+      const next = { ...current };
+      const entry = { ...(next[variantId] ?? {}) };
+      if (isLoading) {
+        entry[metric] = true;
+        next[variantId] = entry;
+        return next;
+      }
+      delete entry[metric];
+      if (Object.keys(entry).length === 0) {
+        delete next[variantId];
+      } else {
+        next[variantId] = entry;
+      }
+      return next;
+    });
+  };
+
+  const handleRemixTip = async (variantId: string, metric: ScoreMetricKey) => {
+    if (!apiKey) {
+      pushToast('error', 'Voeg eerst je OpenAI API-sleutel toe.');
+      return;
+    }
+
+    const target = variants.find((entry) => entry.variant.id === variantId);
+    if (!target || !target.score) {
+      pushToast('error', 'Tip kan pas opnieuw geschreven worden na een scoreberekening.');
+      return;
+    }
+
+    const currentTip = target.score[metric]?.tip;
+    if (!currentTip) {
+      pushToast('error', 'Geen tip beschikbaar om te herschrijven.');
+      return;
+    }
+
+    setTipLoading(variantId, metric, true);
+    try {
+      const { tip, variant: improvedVariant } = await remixScoreTip(
+        apiKey,
+        formValues.model,
+        target.variant,
+        metric,
+        currentTip,
+      );
+
+      const mergedVariant = {
+        ...target.variant,
+        ...improvedVariant,
+        id: target.variant.id,
+      };
+
+      const updatedEntry: VariantWithMeta = {
+        ...target,
+        variant: mergedVariant,
+        warnings: getLengthWarnings(mergedVariant),
+        score: {
+          ...target.score,
+          updatedAt: Date.now(),
+          [metric]: { ...target.score[metric], tip },
+        },
+      };
+
+      setVariants((existing) =>
+        existing.map((entry) => (entry.variant.id === variantId ? updatedEntry : entry)),
+      );
+
+      await scoreVariants([updatedEntry], formValues.model);
+      pushToast('success', 'Tip toegepast en score ververst.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Tip remix mislukt';
+      pushToast('error', message);
+    } finally {
+      setTipLoading(variantId, metric, false);
+    }
+  };
+
   const handleFavoriteCopy = async (favorite: FavoriteVariant) => {
     try {
       await navigator.clipboard.writeText(formatVariantForClipboard(favorite.variant));
@@ -362,6 +442,8 @@ const App: React.FC = () => {
                     onCopy={handleCopy}
                     onSave={handleSave}
                     onScore={handleScore}
+                    onRemixTip={handleRemixTip}
+                    remixingTips={tipProgress[item.variant.id]}
                   />
                 ))}
               </div>

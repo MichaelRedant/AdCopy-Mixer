@@ -68,6 +68,8 @@ export interface VariantScore {
   updatedAt: number;
 }
 
+export type ScoreMetricKey = keyof Pick<VariantScore, 'clarity' | 'emotion' | 'distinctiveness' | 'ctaStrength'>;
+
 export interface VariantWithMeta {
   variant: AdVariant;
   warnings: string[];
