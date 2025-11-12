@@ -1,74 +1,70 @@
-# Ad Variant Generator
+# AdCopy Mixer
 
-## Overview
-The Ad Variant Generator is a web application that generates multiple advertisement variants based on user-defined parameters such as product, target audience, platform, and vibe. Utilizing the ChatGPT API, this application aims to assist marketers and businesses in creating compelling ad content efficiently.
+AdCopy Mixer is a lightweight web app for marketers to generate, remix and score 3–6 advertentievarianten per run. Vul product, doelgroep, platform en vibe in, druk op "Genereer" en vergelijk het resultaat naast elkaar. Weak lines kun je direct remixen, favorieten bewaar je lokaal en alle platform-limieten worden automatisch bewaakt.
 
-## Features
-- Generate 3-6 advertisement variants based on user input.
-- User-friendly interface for inputting product details and preferences.
-- Display generated ad variants with options for interaction.
-- Responsive design for optimal viewing on various devices.
+## Hoogtepunten
 
-## Project Structure
-```
+- **Slim formulier** – Product, doelgroep, USP's, differentiator, bezwaren, tone-of-voice en verplichte claims in één overzicht.
+- **Toolbar met presets** – Kies taal, aantal varianten (3–6) en vibe-preset (playful, urgent, luxe, betrouwbaar, rebels, minimal, warm, no-nonsense, premium).
+- **Multi-variant output** – 3–6 blokken met headline(s), primary text, description, CTA, notes en lengte-waarschuwingen per platform.
+- **Remix & scoring** – Remix varianten per doel (scherper, korter, krachtiger, informeler, meer premium) en herbereken AI-score op duidelijkheid, emotie, onderscheidend vermogen en CTA-sterkte.
+- **Favorieten & export** – Bewaar varianten met campagnetags in localStorage, filter in de zijlade en exporteer naar CSV of JSON.
+- **Runtime API key** – Je OpenAI-sleutel wordt enkel in `sessionStorage` opgeslagen en kan op elk moment gewijzigd worden.
+
+## Belangrijkste bestanden
+
+```text
 ad-variant-generator
+├── index.html                # Vite entry point
 ├── src
-│   ├── main.tsx          # Entry point of the application
-│   ├── App.tsx           # Main application component managing routing
-│   ├── pages
-│   │   ├── Home.tsx      # Home page for ad generation form
-│   │   └── Results.tsx   # Page displaying generated ad variants
-│   ├── components
-│   │   ├── AdForm.tsx    # Component for ad generation form
-│   │   └── AdCard.tsx    # Component for displaying ad variants
-│   ├── services
-│   │   └── chatgpt.ts    # Functions to interact with ChatGPT API
-│   ├── hooks
-│   │   └── useGenerateAds.ts # Custom hook for ad generation logic
-│   ├── types
-│   │   └── index.ts      # TypeScript types and interfaces
-│   ├── utils
-│   │   └── promptBuilders.ts # Utility functions for prompt building
-│   └── styles
-│       └── globals.css    # Global CSS styles
-├── public
-│   └── index.html         # Main HTML file for the application
-├── package.json            # npm configuration file
-├── tsconfig.json          # TypeScript configuration file
-├── vite.config.ts         # Vite configuration file
-├── .env.example           # Example environment variables
-└── README.md              # Project documentation
+│   ├── main.tsx              # React bootstrap
+│   ├── App.tsx               # Hoofdapplicatie met state management
+│   ├── components            # UI-componenten (FormPanel, VariantCard, FavoritesDrawer, Toolbar, Toasts, ApiKeyModal)
+│   ├── hooks/useToasts.ts    # Eenvoudig toast-management
+│   ├── services/chatgpt.ts   # OpenAI Chat Completions wrappers
+│   ├── styles/globals.css    # Styling (CSS Grid, kaarten, modals)
+│   ├── types                 # TypeScript-interfaces voor formulieren, varianten en localStorage
+│   └── utils                 # Prompt builders, opslaghelpers, exports, validatie
+├── public/                   # Statics (leeg na herstructurering)
+├── package.json              # npm scripts en dependencies
+└── vite.config.ts            # Vite-configuratie
 ```
 
-## Setup Instructions
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd ad-variant-generator
-   ```
+## Installatie
 
-2. Install dependencies:
-   ```
+1. Installeer dependencies:
+   ```bash
    npm install
    ```
 
-3. Create a `.env` file based on the `.env.example` file and add your ChatGPT API key.
-
-4. Start the development server:
-   ```
+2. Start de ontwikkelserver:
+   ```bash
    npm run dev
    ```
 
-5. Open your browser and navigate to `http://localhost:3000` to view the application.
+3. Open de app op [http://localhost:3000](http://localhost:3000) en vul je OpenAI API-sleutel in het modaal.
 
-## Usage
-- Navigate to the Home page to fill out the ad generation form.
-- Input the required details about the product, target audience, platform, and vibe.
-- Submit the form to generate advertisement variants.
-- View and interact with the generated ads on the Results page.
+## Gebruik
 
-## Contributing
-Contributions are welcome! Please open an issue or submit a pull request for any enhancements or bug fixes.
+1. Stel taal, variant-aantal en vibe in via de toolbar.
+2. Vul het formulier met productinformatie en klik op **Genereer varianten**.
+3. Vergelijk de varianten in de grid, remix waar nodig en bereken scores opnieuw.
+4. Bewaar favoriete varianten met een campagnetag; gebruik de favorietenlade om te filteren of exporteren.
+5. Gebruik de knop **Opnieuw formatteren** wanneer het model onverhoopt geen geldig JSON terugstuurt.
 
-## License
-This project is licensed under the MIT License. See the LICENSE file for details.
+## Privacy & sleutelbeheer
+
+- De OpenAI-sleutel blijft in `sessionStorage` en wordt niet persistent opgeslagen.
+- Advertentievarianten, favorieten en historie worden lokaal in `localStorage` bewaard volgens het schema in `src/utils/storage.ts`.
+
+## Build
+
+Voor een productie-build:
+```bash
+npm run build
+```
+De output komt terecht in `dist/`.
+
+## Licentie
+
+MIT
