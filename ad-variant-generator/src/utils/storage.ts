@@ -4,6 +4,7 @@ const SETTINGS_KEY = 'acm_settings';
 const FAVORITES_KEY = 'acm_favorites';
 const HISTORY_KEY = 'acm_history';
 const API_KEY_STORAGE = 'acm_runtime_key';
+const PERFORMANCE_KEY = 'acm_performance';
 
 export const loadSettings = (): Settings => {
   const stored = localStorage.getItem(SETTINGS_KEY);
@@ -70,6 +71,21 @@ export const loadHistory = (): HistoryEntry[] => {
 
 export const saveHistory = (history: HistoryEntry[]) => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+};
+
+export const loadPerformanceMap = (): Record<string, import('../types').PerformanceMetrics> => {
+  const stored = localStorage.getItem(PERFORMANCE_KEY);
+  if (!stored) return {};
+  try {
+    return JSON.parse(stored) as Record<string, import('../types').PerformanceMetrics>;
+  } catch (error) {
+    console.warn('Kon performance data niet lezen.');
+    return {};
+  }
+};
+
+export const savePerformanceMap = (performance: Record<string, import('../types').PerformanceMetrics>) => {
+  localStorage.setItem(PERFORMANCE_KEY, JSON.stringify(performance));
 };
 
 export const loadRuntimeKey = (): string | null => {

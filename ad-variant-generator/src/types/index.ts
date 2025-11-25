@@ -1,13 +1,35 @@
-export type Platform = 'meta' | 'google' | 'linkedin' | 'x' | 'instagram';
+export type Platform = 'meta' | 'google' | 'linkedin' | 'x' | 'instagram' | 'youtube';
 
 export type AdFormat = 'text' | 'image' | 'carousel' | 'video';
 
-export type GptModel = 'gpt-4o-mini' | 'gpt-4o' | 'gpt-4.1-mini' | 'gpt-5';
+export type GptModel =
+  | 'gpt-4o-mini'
+  | 'gpt-4o'
+  | 'gpt-4.1-mini'
+  | 'gpt-5'
+  | 'gpt-5.0'
+  | 'gpt-5.1';
 
 export interface MetricDetail {
   score: number;
   tip: string;
 }
+
+export interface PerformanceMetrics {
+  ctr?: number;
+  cvr?: number;
+  cpa?: number;
+  roas?: number;
+}
+
+export type ScoreMetricKey =
+  | 'relevance'
+  | 'clarity'
+  | 'valueProposition'
+  | 'emotionHook'
+  | 'ctaPower'
+  | 'platformFit'
+  | 'originality';
 
 export type VibePreset =
   | 'playful'
@@ -27,6 +49,10 @@ export type RemixIntent =
   | 'informeler'
   | 'meer premium';
 
+export type CampaignGoal = 'awareness' | 'consideration' | 'conversion' | 'retention';
+export type ActionGoal = 'click' | 'lead' | 'trial' | 'demo' | 'purchase';
+export type AudienceTemperature = 'cold' | 'warm' | 'existing';
+
 export interface FormValues {
   bedrijf: string;
   product: string;
@@ -35,12 +61,16 @@ export interface FormValues {
   diff: string;
   bezwaren: string;
   tone: string;
+  persona: string;
   verplicht: string;
+  campaignGoal: CampaignGoal;
+  actionGoal: ActionGoal;
+  audienceTemperature: AudienceTemperature;
+  coreOffer: string;
   platform: Platform;
   adFormat: AdFormat;
   assetDescription: string;
   vibe: VibePreset;
-  doel: 'CTR' | 'conversie' | 'awareness';
   taal: string;
   regio: string;
   variantCount: number;
@@ -58,23 +88,25 @@ export interface AdVariant {
 }
 
 export interface VariantScore {
+  relevance: MetricDetail;
   clarity: MetricDetail;
-  emotion: MetricDetail;
-  distinctiveness: MetricDetail;
-  ctaStrength: MetricDetail;
-  total: number;
+  valueProposition: MetricDetail;
+  emotionHook: MetricDetail;
+  ctaPower: MetricDetail;
+  platformFit: MetricDetail;
+  originality: MetricDetail;
+  total: number; // 0-100
   summary: string;
   overallTip: string;
   updatedAt: number;
 }
-
-export type ScoreMetricKey = keyof Pick<VariantScore, 'clarity' | 'emotion' | 'distinctiveness' | 'ctaStrength'>;
 
 export interface VariantWithMeta {
   variant: AdVariant;
   warnings: string[];
   score?: VariantScore;
   isScoring: boolean;
+  performance?: PerformanceMetrics;
 }
 
 export interface FavoriteVariant {
@@ -89,7 +121,7 @@ export interface FavoriteVariant {
 export interface HistoryEntry {
   id: string;
   inputs: FormValues;
-  result: { variants: AdVariant[]; advice?: string };
+  result: { variants: AdVariant[]; advice?: string; architecture?: CampaignArchitecture };
 }
 
 export interface Settings {
@@ -104,4 +136,41 @@ export interface ToastMessage {
   id: string;
   type: 'success' | 'error' | 'info';
   message: string;
+}
+
+export interface CampaignArchitecture {
+  hooks: {
+    problems: string[];
+    dreams: string[];
+    objections: string[];
+    urgency: string[];
+  };
+  propositions: {
+    usps: string[];
+    rtbs: string[];
+    socialProofs: string[];
+  };
+  angles: {
+    painFirst: string[];
+    dreamFirst: string[];
+    proofFirst: string[];
+    objectionFirst: string[];
+  };
+}
+
+export interface CampaignBlueprint {
+  meta: {
+    primaryTexts: string[];
+    headlines: string[];
+    descriptions: string[];
+    retargeting: AdVariant;
+    conversion: AdVariant;
+  };
+  google: {
+    headlines: string[];
+    descriptions: string[];
+    callouts: string[];
+    sitelinks: string[];
+    callExtension: string;
+  };
 }

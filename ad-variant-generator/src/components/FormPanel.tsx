@@ -1,6 +1,11 @@
 import React from 'react';
 import { FormValues, Platform } from '../types';
-import { VIBE_OPTIONS } from '../utils/constants';
+import {
+  ACTION_GOAL_OPTIONS,
+  AUDIENCE_TEMPERATURE_OPTIONS,
+  CAMPAIGN_GOAL_OPTIONS,
+  VIBE_OPTIONS,
+} from '../utils/constants';
 
 interface FormPanelProps {
   values: FormValues;
@@ -11,10 +16,9 @@ interface FormPanelProps {
 
 const platformOptions: { value: Platform; label: string }[] = [
   { value: 'meta', label: 'Meta' },
-  { value: 'google', label: 'Google Ads' },
+  { value: 'google', label: 'Google Search' },
+  { value: 'youtube', label: 'YouTube' },
   { value: 'linkedin', label: 'LinkedIn' },
-  { value: 'x', label: 'X / Twitter' },
-  { value: 'instagram', label: 'Instagram' },
 ];
 
 const adFormatOptions = [
@@ -32,6 +36,13 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
 
   return (
     <section className="form-panel glass-panel" aria-label="Invoerformulier">
+      <div className="form-row">
+        <h3>Campagne architect</h3>
+        <p className="form-help">
+          Vul de basis in; AdCopy Mixer bouwt eerst hooks, proposities en angles, en rolt daaruit de copy.
+        </p>
+      </div>
+
       <div className="form-row">
         <label htmlFor="bedrijf">Bedrijfsnaam</label>
         <p className="form-help">Vul de naam in zoals klanten je kennen. Dit helpt het model om consistente merkverwijzingen te gebruiken.</p>
@@ -69,6 +80,63 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
           required
         />
       </div>
+
+      <div className="form-grid">
+        <div className="form-row select-row">
+          <label htmlFor="campaignGoal">Campagnedoel (funnel)</label>
+          <p className="form-help">Awareness, consideration, conversion of retention.</p>
+          <select id="campaignGoal" name="campaignGoal" value={values.campaignGoal} onChange={handleInputChange}>
+            {CAMPAIGN_GOAL_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-row select-row">
+          <label htmlFor="actionGoal">Doelactie</label>
+          <p className="form-help">Klik, lead, trial, demo of purchase: wat wil je dat de gebruiker doet?</p>
+          <select id="actionGoal" name="actionGoal" value={values.actionGoal} onChange={handleInputChange}>
+            {ACTION_GOAL_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="form-grid">
+        <div className="form-row select-row">
+          <label htmlFor="audienceTemperature">Doelgroep-temperatuur</label>
+          <p className="form-help">Koud, warm of bestaande klanten; bepaalt hoe direct je aanbod is.</p>
+          <select
+            id="audienceTemperature"
+            name="audienceTemperature"
+            value={values.audienceTemperature}
+            onChange={handleInputChange}
+          >
+            {AUDIENCE_TEMPERATURE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-row">
+          <label htmlFor="coreOffer">Kernaanbod</label>
+          <p className="form-help">Gratis trial, korting, ebook, webinar, demo, ... Geef een concreet haakje.</p>
+          <input
+            id="coreOffer"
+            name="coreOffer"
+            type="text"
+            value={values.coreOffer}
+            onChange={handleInputChange}
+            maxLength={200}
+          />
+        </div>
+      </div>
+
       <div className="form-grid">
         <div className="form-row">
           <label htmlFor="regio">Land / Regio</label>
@@ -121,7 +189,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
         </div>
         <div className="form-row">
           <label htmlFor="tone">Tone of voice</label>
-          <p className="form-help">Omschrijf hoe de advertentie moet klinken: speels, zakelijk, warm, …</p>
+          <p className="form-help">Omschrijf hoe de advertentie moet klinken: speels, zakelijk, warm, etc.</p>
           <textarea
             id="tone"
             name="tone"
@@ -130,6 +198,20 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
             maxLength={400}
           />
         </div>
+      </div>
+      <div className="form-row">
+        <label htmlFor="persona">Persona / rol</label>
+        <p className="form-help">
+          Geef een korte schets van de persona of rol die de copy schrijft (bijv. senior performance marketeer,
+          productexpert, coach). Laat leeg voor een neutrale schrijfstijl.
+        </p>
+        <textarea
+          id="persona"
+          name="persona"
+          value={values.persona}
+          onChange={handleInputChange}
+          maxLength={400}
+        />
       </div>
       <div className="form-grid">
         <div className="form-row">
@@ -176,15 +258,6 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
             ))}
           </select>
         </div>
-        <div className="form-row select-row">
-          <label htmlFor="doel">Doelstelling</label>
-          <p className="form-help">Wat wil je bereiken met deze campagne: klikken, conversies of naamsbekendheid?</p>
-          <select id="doel" name="doel" value={values.doel} onChange={handleInputChange}>
-            <option value="CTR">CTR</option>
-            <option value="conversie">Conversie</option>
-            <option value="awareness">Awareness</option>
-          </select>
-        </div>
       </div>
       {values.adFormat !== 'text' && (
         <div className="form-row">
@@ -204,7 +277,7 @@ const FormPanel: React.FC<FormPanelProps> = ({ values, onChange, onSubmit, isGen
       )}
       <div className="form-actions">
         <button type="button" className="primary" onClick={onSubmit} disabled={isGenerating}>
-          {isGenerating ? 'Genereren…' : 'Genereer varianten'}
+          {isGenerating ? 'Genereren...' : 'Genereer varianten'}
         </button>
       </div>
     </section>

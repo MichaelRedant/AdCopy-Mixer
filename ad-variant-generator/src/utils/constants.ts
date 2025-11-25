@@ -20,14 +20,18 @@ export const DEFAULT_FORM_VALUES: FormValues = {
   diff: '',
   bezwaren: '',
   tone: '',
+  persona: '',
   verplicht: '',
+  campaignGoal: 'awareness',
+  actionGoal: 'click',
+  audienceTemperature: 'cold',
+  coreOffer: '',
   platform: 'meta',
   adFormat: 'text',
   assetDescription: '',
   vibe: 'playful',
-  doel: 'CTR',
   taal: 'nl-BE',
-  regio: 'België',
+  regio: 'Belgie',
   variantCount: 4,
   model: 'gpt-4o-mini',
 };
@@ -36,17 +40,27 @@ export const MODEL_OPTIONS: { value: GptModel; label: string; description: strin
   {
     value: 'gpt-4o-mini',
     label: 'GPT-4o mini',
-    description: 'Snel en voordelig – ideaal voor snelle iteraties en concepten.',
+    description: 'Snel en voordelig - ideaal voor snelle iteraties en concepten.',
   },
   {
     value: 'gpt-4o',
     label: 'GPT-4o',
-    description: 'Sterker in nuance en kwaliteit – gebruik voor kritieke campagnes.',
+    description: 'Sterker in nuance en kwaliteit - gebruik voor kritieke campagnes.',
   },
   {
     value: 'gpt-4.1-mini',
     label: 'GPT-4.1 mini',
     description: 'Biedt balans tussen snelheid en creativiteit met recente data.',
+  },
+  {
+    value: 'gpt-5.0',
+    label: 'GPT-5.0',
+    description: 'Precisie en consistentie voor brand safety en strakkere tone-of-voice.',
+  },
+  {
+    value: 'gpt-5.1',
+    label: 'GPT-5.1',
+    description: 'Meest recente generatie met sterkere reasoning voor campagne-optimalisatie.',
   },
   {
     value: 'gpt-5',
@@ -65,4 +79,25 @@ export const VIBE_OPTIONS: { value: VibePreset; label: string }[] = [
   { value: 'warm-menselijk', label: 'Warm & Menselijk' },
   { value: 'no-nonsense', label: 'No-nonsense' },
   { value: 'premium', label: 'Premium' },
+];
+
+export const CAMPAIGN_GOAL_OPTIONS = [
+  { value: 'awareness', label: 'Awareness' },
+  { value: 'consideration', label: 'Consideration' },
+  { value: 'conversion', label: 'Conversion' },
+  { value: 'retention', label: 'Retention' },
+];
+
+export const ACTION_GOAL_OPTIONS = [
+  { value: 'click', label: 'Klik' },
+  { value: 'lead', label: 'Lead' },
+  { value: 'trial', label: 'Trial' },
+  { value: 'demo', label: 'Demo' },
+  { value: 'purchase', label: 'Purchase' },
+];
+
+export const AUDIENCE_TEMPERATURE_OPTIONS = [
+  { value: 'cold', label: 'Koud' },
+  { value: 'warm', label: 'Warm' },
+  { value: 'existing', label: 'Bestaande klanten' },
 ];

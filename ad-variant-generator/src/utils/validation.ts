@@ -1,11 +1,12 @@
 import { AdVariant, Platform } from '../types';
 
-const PLATFORM_LIMITS: Record<Platform, Partial<Record<'headline' | 'primaryText' | 'description', number>>> = {
+export const PLATFORM_LIMITS: Record<Platform, Partial<Record<'headline' | 'primaryText' | 'description', number>>> = {
   meta: { primaryText: 125, headline: 40, description: 30 },
   google: { headline: 30, description: 90 },
   linkedin: { primaryText: 150, headline: 70 },
   x: { primaryText: 280 },
   instagram: { primaryText: 125, headline: 40 },
+  youtube: { primaryText: 90, headline: 70, description: 90 },
 };
 
 const LABELS: Record<Platform, string> = {
@@ -14,6 +15,7 @@ const LABELS: Record<Platform, string> = {
   linkedin: 'LinkedIn',
   x: 'X',
   instagram: 'Instagram',
+  youtube: 'YouTube',
 };
 
 const characters = (value: string) => value.trim().length;
