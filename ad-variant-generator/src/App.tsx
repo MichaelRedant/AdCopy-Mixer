@@ -101,6 +101,7 @@ const App: React.FC = () => {
   const [isGeneratingBlueprint, setIsGeneratingBlueprint] = useState(false);
   const [namingSuggestions, setNamingSuggestions] = useState<string[]>([]);
   const [isGeneratingNames, setIsGeneratingNames] = useState(false);
+  const [showAdvice, setShowAdvice] = useState(true);
 
   const { toasts, pushToast, removeToast } = useToasts();
 
@@ -130,6 +131,14 @@ const App: React.FC = () => {
   useEffect(() => {
     savePerformanceMap(performanceMap);
   }, [performanceMap]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowAdvice(window.scrollY < 180);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const persistSettings = (next: FormValues) => {
     saveSettings({
@@ -570,7 +579,6 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
-      <ApiKeyModal onClose={(key) => setApiKey(key ?? '')} />
       <Toolbar
         language={formValues.taal}
         onLanguageChange={(value) => handleSettingsChange({ taal: value })}
@@ -581,184 +589,272 @@ const App: React.FC = () => {
         onToggleFavorites={handleToggleFavorites}
         model={formValues.model}
         onModelChange={(value) => handleSettingsChange({ model: value })}
-        advice={advice}
+        advice={showAdvice ? advice : undefined}
         isGenerating={isGenerating}
-      />
+      >
+        <ApiKeyModal onClose={(key) => setApiKey(key ?? '')} />
+      </Toolbar>
 
       <main className="layout">
-        <div className="module-switch" aria-label="Modules">
-          {MODULES.map((module) => (
-            <button
-              key={module.id}
-              type="button"
-              className={`chip ${activeModule === module.id ? 'active' : ''}`}
-              onClick={() => setActiveModule(module.id)}
-            >
-              <span className="chip-title">{module.label}</span>
-              <small className="chip-subtitle">{module.description}</small>
-            </button>
-          ))}
-        </div>
+        <aside className="module-rail glass-panel" aria-label="Modules">
+          <div className="rail-header">
+            <p className="eyebrow">Modules</p>
+            <p className="section-subtitle">Kies wat je nodig hebt; alles blijft bewaard.</p>
+          </div>
+          <div className="rail-list">
+            {MODULES.map((module, index) => (
+              <button
+                key={module.id}
+                type="button"
+                className={`rail-item ${activeModule === module.id ? 'active' : ''}`}
+                onClick={() => setActiveModule(module.id)}
+              >
+                <span className="rail-step">{index + 1}</span>
+                <span className="rail-meta">
+                  <span className="rail-title">{module.label}</span>
+                  <small>{module.description}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </aside>
 
         <section className="content" aria-live="polite">
-          {activeModule === 'briefing' && (
-            <>
-              <div className="section-header">
-                <p className="eyebrow">Stap 1</p>
-                <h2>Campagne briefing & persona</h2>
-                <p className="section-subtitle">
-                  Start met een mini-briefing: doel, platform, doelactie, doelgroep en kernaanbod. Voeg ook persona toe om generaties te sturen.
-                </p>
-              </div>
-              <FormPanel
-                values={formValues}
-                onChange={handleFormChange}
-                onSubmit={handleFormSubmit}
-                isGenerating={isGenerating}
-              />
-              <div className="glass-panel help-panel">
-                <h3>Hoe werkt dit?</h3>
-                <ul>
-                  <li>Doorloop de briefingvelden en kies een vibe, model en platform.</li>
-                  <li>Gebruik persona om tone-of-voice en voorbeelden te sturen.</li>
-                  <li>Kies GPT-5.0 of GPT-5.1 voor nuance; 4o mini voor snelheid.</li>
-                  <li>Remix, score en pas tips toe met een klik; alles wordt live bijgewerkt.</li>
-                  <li>Tip: "Klanten zijn kmo's, houden van concreet + cijfers" werkt goed volgens Michael Redant.</li>
-                </ul>
-              </div>
-            </>
-          )}
-
-          {activeModule === 'performance' && (
-            <>
-              <div className="section-header">
-                <p className="eyebrow">Performance</p>
-                <h2>UTM & performance-import</h2>
-                <p className="section-subtitle">Kleine UTM-builder + CSV/API import voor CTR/CVR/CPA/ROAS.</p>
-              </div>
-              <UTMBuilder
-                platform={formValues.platform as 'meta' | 'google' | 'linkedin'}
-                onCopy={() => pushToast('success', 'UTM-link gekopieerd.')}
-                onError={(msg) => pushToast('error', msg)}
-              />
-              <PerformanceImport onImport={handlePerformanceImport} onError={(msg) => pushToast('error', msg)} />
-              {performanceInsights.length > 0 && <PerformanceInsights insights={performanceInsights} />}
-            </>
-          )}
-
-          {activeModule === 'angles' && (
-            <>
-              <div className="section-header">
-                <p className="eyebrow">Angles & hooks</p>
-                <h2>Instant ideeen</h2>
-                <p className="section-subtitle">Expand angles, auto-hooks en campagne-architectuur.</p>
-              </div>
-              <AngleExpander onExpand={handleAngleExpand} isLoading={isExpandingAngle} />
-              <HookGenerator onGenerate={handleHookGenerate} />
-              {generatedHooks.length > 0 && (
-                <div className="glass-panel hook-list-panel">
-                  <h3>Gegenereerde hooks</h3>
-                  <ul>
-                    {generatedHooks.map((hook) => (
-                      <li key={hook}>{hook}</li>
-                    ))}
+          <div className="content-stack">
+            {activeModule === 'briefing' && (
+              <>
+                <div className="module-card glass-panel">
+                  <div className="section-header">
+                    <p className="eyebrow">Stap 1</p>
+                    <div>
+                      <h2>Campagne briefing & persona</h2>
+                      <p className="section-subtitle">
+                        Houd de briefing compact: doel, platform, doelgroep en kernaanbod. Voeg persona toe om generaties te sturen.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <FormPanel
+                  values={formValues}
+                  onChange={handleFormChange}
+                  onSubmit={handleFormSubmit}
+                  isGenerating={isGenerating}
+                />
+                <div className="glass-panel help-panel">
+                  <div className="help-header">
+                    <span className="help-badge">Tip</span>
+                    <h3>Zo haal je het meeste uit deze module</h3>
+                  </div>
+                  <p className="help-intro">Werk met concrete taal en korte bullets. Sla tussendoor op met favorieten.</p>
+                  <ul className="help-list">
+                    <li>Brief enkel de essentials en laat de model-keuze en vibe het fine-tunen.</li>
+                    <li>Persona: geef rol en voorkeuren; bv. “senior performance marketeer, houdt van data-first copy”.</li>
+                    <li>Kies 3-4 vibes om te testen en stel het aantal varianten in op 3-6.</li>
+                    <li>Gebruik “Re-run” na scoren of remixen om de layout consistent te houden.</li>
                   </ul>
                 </div>
-              )}
-              {architecture && <CampaignArchitecturePanel architecture={architecture} />}
-            </>
-          )}
+              </>
+            )}
 
-          {activeModule === 'blueprint' && (
-            <>
-              <div className="section-header">
-                <p className="eyebrow">Blueprint</p>
-                <h2>Campaign Blueprint & naming</h2>
-                <p className="section-subtitle">Complete pakketten voor Meta/Google + naamconventies.</p>
-              </div>
-              <div className="glass-panel blueprint-trigger">
-                <div>
-                  <h3>Genereer blueprint</h3>
-                  <p className="section-subtitle">3 primary texts, 5 headlines, retargeting/conversion + RSA pakket.</p>
+            {activeModule === 'performance' && (
+              <>
+                <div className="module-card glass-panel">
+                  <div className="section-header">
+                    <p className="eyebrow">Performance</p>
+                    <div>
+                      <h2>UTM & performance-import</h2>
+                      <p className="section-subtitle">Kleine UTM-builder + CSV/API import voor CTR/CVR/CPA/ROAS.</p>
+                    </div>
+                  </div>
                 </div>
-                <button type="button" className="primary" onClick={handleBlueprintGenerate} disabled={isGeneratingBlueprint}>
-                  {isGeneratingBlueprint ? 'Bezig...' : 'Genereer blueprint'}
-                </button>
-              </div>
-              {blueprint && (
-                <CampaignBlueprintPanel
-                  blueprint={blueprint}
-                  onImportMeta={importMetaBlueprint}
-                  onImportGoogle={importGoogleBlueprint}
+                <UTMBuilder
+                  platform={formValues.platform as 'meta' | 'google' | 'linkedin'}
+                  onCopy={() => pushToast('success', 'UTM-link gekopieerd.')}
+                  onError={(msg) => pushToast('error', msg)}
                 />
-              )}
-              <AdNamingGenerator onGenerate={handleNamingGenerate} />
-              {namingSuggestions.length > 0 && (
-                <div className="glass-panel naming-results">
-                  <h3>Naam suggesties</h3>
-                  <ul>
-                    {namingSuggestions.map((name) => (
-                      <li key={name}>{name}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </>
-          )}
+                <PerformanceImport onImport={handlePerformanceImport} onError={(msg) => pushToast('error', msg)} />
+                {performanceInsights.length > 0 && <PerformanceInsights insights={performanceInsights} />}
+              </>
+            )}
 
-          {activeModule === 'variants' && (
-            <>
-              <div className="section-header">
-                <p className="eyebrow">Varianten</p>
-                <h2>Score & optimaliseer</h2>
-                <p className="section-subtitle">Live tips toepassen en prestaties opslaan.</p>
-              </div>
-              {variants.length > 0 && (
-                <VariantChecklist
-                  variants={variants.map((v) => v.variant)}
-                  onAddHooks={() => setActiveModule('angles')}
-                  onAddSocialProof={() => setActiveModule('angles')}
-                  onAddUrgency={() => setActiveModule('angles')}
-                  onAddAngle={() => setActiveModule('angles')}
-                />
-              )}
-              {needsReformat && (
-                <div className="glass-panel warning-panel">
-                  <p>Nieuwe scores beschikbaar. Pas toe met "Re-run" voor consistente layout.</p>
-                  <button type="button" className="secondary" onClick={handleReformat}>
-                    Re-run met huidige input
+            {activeModule === 'angles' && (
+              <>
+                <div className="angles-shell glass-panel">
+                  <div className="section-header">
+                    <div>
+                      <p className="eyebrow">Angles & hooks</p>
+                      <h2>Instant ideeen</h2>
+                      <p className="section-subtitle">Kies een categorie, breid een angle uit en stal hooks uit in één flow.</p>
+                    </div>
+                    <div className="angle-badges">
+                      <span className="hint-pill">Beste voor snelle ideation</span>
+                      <span className="hint-pill soft">Gebruik persona voor toon</span>
+                    </div>
+                  </div>
+
+                  <div className="angles-grid">
+                    <div className="angles-column">
+                      <div className="panel-header">
+                        <h3>Expand een angle</h3>
+                        <p className="toolbar-help">Kies een preset en vul direct een nieuwe variant.</p>
+                      </div>
+                      <AngleExpander onExpand={handleAngleExpand} isLoading={isExpandingAngle} />
+                    </div>
+
+                    <div className="angles-column">
+                      <div className="panel-header">
+                        <h3>Genereer hooks</h3>
+                        <p className="toolbar-help">Selecteer categorieën om meerdere hooks tegelijk te testen.</p>
+                      </div>
+                      <HookGenerator onGenerate={handleHookGenerate} />
+                      {generatedHooks.length > 0 && (
+                        <div className="glass-panel hook-list-panel nested">
+                          <div className="panel-header">
+                            <h4>Gegenereerde hooks</h4>
+                            <p className="toolbar-help">{generatedHooks.length} klaar voor copy & paste.</p>
+                          </div>
+                          <ul>
+                            {generatedHooks.map((hook) => (
+                              <li key={hook}>{hook}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {architecture && (
+                    <div className="glass-panel architecture-wrapper">
+                      <div className="panel-header">
+                        <h3>Campagne-architectuur</h3>
+                        <p className="toolbar-help">Overzicht van proposities, hooks en varianten.</p>
+                      </div>
+                      <CampaignArchitecturePanel architecture={architecture} />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {activeModule === 'blueprint' && (
+              <>
+                <div className="module-card glass-panel">
+                  <div className="section-header">
+                    <p className="eyebrow">Blueprint</p>
+                    <div>
+                      <h2>Campaign Blueprint & naming</h2>
+                      <p className="section-subtitle">Complete pakketten voor Meta/Google + naamconventies.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="glass-panel blueprint-trigger">
+                  <div>
+                    <h3>Genereer blueprint</h3>
+                    <p className="section-subtitle">3 primary texts, 5 headlines, retargeting/conversion + RSA pakket.</p>
+                  </div>
+                  <button type="button" className="primary" onClick={handleBlueprintGenerate} disabled={isGeneratingBlueprint}>
+                    {isGeneratingBlueprint ? 'Bezig...' : 'Genereer blueprint'}
                   </button>
                 </div>
-              )}
-              <div className="variants-grid">
-                {variants.map((item) => (
-                  <VariantCard
-                    key={item.variant.id}
-                    item={item}
-                    accentColor={VIBE_COLORS[formValues.vibe]}
-                    onRemix={handleRemix}
-                    onCopy={handleCopy}
-                    onSave={handleSave}
-                    onScore={handleScore}
-                    onRemixTip={handleRemixTip}
-                    onApplyTip={handleApplyTip}
-                    onPerformanceSave={handlePerformanceSave}
-                    remixingTips={tipProgress[item.variant.id]}
-                    applyingTips={applyTipProgress[item.variant.id]}
-                    ctaHint={ctaHint}
-                    policyWarnings={getPolicyWarnings(item.variant)}
-                    performance={performanceMap[item.variant.id]}
+                {blueprint && (
+                  <CampaignBlueprintPanel
+                    blueprint={blueprint}
+                    onImportMeta={importMetaBlueprint}
+                    onImportGoogle={importGoogleBlueprint}
                   />
-                ))}
-                {variants.length === 0 && (
-                  <div className="glass-panel empty-state">
-                    <h3>Nog geen varianten</h3>
-                    <p>Genereer eerst via de briefingmodule.</p>
+                )}
+                <AdNamingGenerator onGenerate={handleNamingGenerate} />
+                {namingSuggestions.length > 0 && (
+                  <div className="glass-panel naming-results">
+                    <h3>Naam suggesties</h3>
+                    <ul>
+                      {namingSuggestions.map((name) => (
+                        <li key={name}>{name}</li>
+                      ))}
+                    </ul>
                   </div>
                 )}
-              </div>
-            </>
-          )}
+              </>
+            )}
+
+            {activeModule === 'variants' && (
+              <>
+                <div className="module-card glass-panel">
+                  <div className="section-header">
+                    <p className="eyebrow">Varianten</p>
+                    <div>
+                      <h2>Score & optimaliseer</h2>
+                      <p className="section-subtitle">Live tips toepassen en prestaties opslaan.</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="variants-shell glass-panel">
+                  <div className="variant-hero">
+                    <div>
+                      <h3>Test & verbeter</h3>
+                      <p className="section-subtitle">Gebruik de checklist en tips om varianten consistent te houden.</p>
+                      {ctaHint && <span className="hint-pill">{ctaHint}</span>}
+                    </div>
+                    <div className="variant-meta">
+                      <span className="meta-dot" />
+                      <p className="toolbar-help">
+                        {performanceInsights.length > 0
+                          ? `${performanceInsights.length} performance insights actief`
+                          : 'Sla performance op om scoring te verrijken.'}
+                      </p>
+                    </div>
+                  </div>
+                  {variants.length > 0 && (
+                    <VariantChecklist
+                      variants={variants.map((v) => v.variant)}
+                      onAddHooks={() => setActiveModule('angles')}
+                      onAddSocialProof={() => setActiveModule('angles')}
+                      onAddUrgency={() => setActiveModule('angles')}
+                      onAddAngle={() => setActiveModule('angles')}
+                    />
+                  )}
+                  {needsReformat && (
+                    <div className="glass-panel warning-panel">
+                      <div>
+                        <p>Nieuwe scores beschikbaar. Pas toe met "Re-run" voor consistente layout.</p>
+                        <small className="hint">We gebruiken dezelfde input; dit herstructureert enkel de kaarten.</small>
+                      </div>
+                      <button type="button" className="secondary" onClick={handleReformat}>
+                        Re-run met huidige input
+                      </button>
+                    </div>
+                  )}
+                  <div className="variants-grid">
+                    {variants.map((item) => (
+                      <VariantCard
+                        key={item.variant.id}
+                        item={item}
+                        accentColor={VIBE_COLORS[formValues.vibe]}
+                        onRemix={handleRemix}
+                        onCopy={handleCopy}
+                        onSave={handleSave}
+                        onScore={handleScore}
+                        onRemixTip={handleRemixTip}
+                        onApplyTip={handleApplyTip}
+                        onPerformanceSave={handlePerformanceSave}
+                        remixingTips={tipProgress[item.variant.id]}
+                        applyingTips={applyTipProgress[item.variant.id]}
+                        ctaHint={ctaHint}
+                        policyWarnings={getPolicyWarnings(item.variant)}
+                        performance={performanceMap[item.variant.id]}
+                      />
+                    ))}
+                    {variants.length === 0 && (
+                      <div className="glass-panel empty-state">
+                        <h3>Nog geen varianten</h3>
+                        <p>Genereer eerst via de briefingmodule.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </section>
       </main>
 
